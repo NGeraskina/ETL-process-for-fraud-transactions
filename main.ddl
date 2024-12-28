@@ -44,7 +44,7 @@ CREATE TABLE public.nsgr_stg_transactions (
     oper_result VARCHAR,
     terminal VARCHAR,
     FOREIGN KEY (card_num) REFERENCES public.nsgr_stg_cards(card_num),
-    --FOREIGN KEY (terminal) REFERENCES public.nsgr_stg_terminals(terminal_id)
+    FOREIGN KEY (terminal) REFERENCES public.nsgr_stg_terminals(terminal_id)
 );
 
 
@@ -109,9 +109,9 @@ CREATE TABLE public.nsgr_dwh_fact_transactions (
     oper_type VARCHAR,
     amt DECIMAL,
     oper_result VARCHAR,
-    terminal VARCHAR,
-    FOREIGN KEY (card_num) REFERENCES public.nsgr_dwh_dim_cards(card_num),
-    FOREIGN KEY (terminal) REFERENCES public.nsgr_dwh_dim_terminals(terminal_id)
+    terminal VARCHAR
+    --FOREIGN KEY (card_num) REFERENCES public.nsgr_dwh_dim_cards_hist(card_num),
+    --FOREIGN KEY (terminal) REFERENCES public.nsgr_dwh_dim_terminals_hist(terminal_id)
 );
 
 CREATE TABLE public.nsgr_rep_fraud (
