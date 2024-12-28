@@ -122,9 +122,9 @@ for date in unique_dates:
     DO $$
     BEGIN
     -- Проверяем, пустая ли таблица
-    IF NOT EXISTS (SELECT 1 FROM public.nsgr_dwh_dim_clients) THEN
+    IF NOT EXISTS (SELECT 1 FROM public.nsgr_dwh_dim_clients_hist) THEN
         -- Таблица пустая, вставляем все записи из stg
-        INSERT INTO public.nsgr_dwh_dim_clients (client_id, last_name, first_name, patrinymic, date_of_birth, passport_num, passport_valid_to, phone, effective_from, effective_to, deleted_flg)
+        INSERT INTO public.nsgr_dwh_dim_clients_hist (client_id, last_name, first_name, patrinymic, date_of_birth, passport_num, passport_valid_to, phone, effective_from, effective_to, deleted_flg)
         SELECT 
             client_id,
             last_name,
@@ -139,12 +139,12 @@ for date in unique_dates:
             FALSE as deleted_flg
         FROM public.nsgr_stg_clients AS s;
     ELSE
-        UPDATE public.nsgr_dwh_dim_clients
+        UPDATE public.nsgr_dwh_dim_clients_hist
         SET effective_to = to_date('{date}', 'DDMMYYYY'), deleted_flg = TRUE
         WHERE (client_id, last_name, first_name, patrinymic, date_of_birth, passport_num, passport_valid_to, phone)
         IN (
             SELECT d.client_id, d.last_name, d.first_name, d.patrinymic, d.date_of_birth, d.passport_num, d.passport_valid_to, d.phone
-            FROM public.nsgr_dwh_dim_clients d
+            FROM public.nsgr_dwh_dim_clients_hist d
             JOIN public.nsgr_stg_clients s
             ON d.client_id = s.client_id
             WHERE 
@@ -159,7 +159,7 @@ for date in unique_dates:
                 AND d.effective_to = '3000-01-01'::DATE
         );
                 
-        INSERT INTO public.nsgr_dwh_dim_clients (client_id, last_name, first_name, patrinymic, date_of_birth, passport_num, passport_valid_to, phone, effective_from, effective_to, deleted_flg)
+        INSERT INTO public.nsgr_dwh_dim_clients_hist (client_id, last_name, first_name, patrinymic, date_of_birth, passport_num, passport_valid_to, phone, effective_from, effective_to, deleted_flg)
         SELECT 
             s.client_id as client_id, 
             s.last_name as last_name, 
@@ -175,7 +175,7 @@ for date in unique_dates:
         FROM 
             public.nsgr_stg_clients s
         LEFT JOIN 
-            public.nsgr_dwh_dim_clients d ON s.client_id = d.client_id 
+            public.nsgr_dwh_dim_clients_hist d ON s.client_id = d.client_id 
                 AND d.effective_to = '3000-01-01'::DATE
         WHERE 
             d.client_id IS NULL OR ( 
@@ -195,16 +195,16 @@ for date in unique_dates:
 
     """)
     conn.commit()
-    print("public.nsgr_stg_clients отгружена в public.nsgr_dwh_dim_clients")
+    print("public.nsgr_stg_clients отгружена в public.nsgr_dwh_dim_clients_hist")
 
 
     cursor.execute(f"""
     DO $$
     BEGIN
     -- Проверяем, пустая ли таблица
-    IF NOT EXISTS (SELECT 1 FROM public.nsgr_dwh_dim_accounts) THEN
+    IF NOT EXISTS (SELECT 1 FROM public.nsgr_dwh_dim_accounts_hist) THEN
         -- Таблица пустая, вставляем все записи из stg
-        INSERT INTO public.nsgr_dwh_dim_accounts (account_num, valid_to, client, effective_from, effective_to, deleted_flg)
+        INSERT INTO public.nsgr_dwh_dim_accounts_hist (account_num, valid_to, client, effective_from, effective_to, deleted_flg)
         SELECT 
             account_num,
             valid_to,
@@ -214,12 +214,12 @@ for date in unique_dates:
             FALSE as deleted_flg
         FROM public.nsgr_stg_accounts AS s;
     ELSE
-        UPDATE public.nsgr_dwh_dim_accounts
+        UPDATE public.nsgr_dwh_dim_accounts_hist
         SET effective_to = to_date('{date}', 'DDMMYYYY'), deleted_flg = TRUE
         WHERE (account_num, valid_to, client)
         IN (
             SELECT d.account_num, d.valid_to, d.client
-            FROM public.nsgr_dwh_dim_accounts d
+            FROM public.nsgr_dwh_dim_accounts_hist d
             JOIN public.nsgr_stg_accounts s
             ON d.account_num = s.account_num
             WHERE 
@@ -229,7 +229,7 @@ for date in unique_dates:
                 AND d.effective_to = '3000-01-01'::DATE
         );
                 
-        INSERT INTO public.nsgr_dwh_dim_accounts (account_num, valid_to, client, effective_from, effective_to, deleted_flg)
+        INSERT INTO public.nsgr_dwh_dim_accounts_hist (account_num, valid_to, client, effective_from, effective_to, deleted_flg)
         SELECT 
             s.account_num as account_num, 
             s.valid_to as valid_to, 
@@ -240,7 +240,7 @@ for date in unique_dates:
         FROM 
             public.nsgr_stg_accounts s
         LEFT JOIN 
-            public.nsgr_dwh_dim_accounts d ON s.account_num = d.account_num 
+            public.nsgr_dwh_dim_accounts_hist d ON s.account_num = d.account_num 
                 AND d.effective_to = '3000-01-01'::DATE
         WHERE 
             d.account_num IS NULL OR 
@@ -254,16 +254,16 @@ for date in unique_dates:
 
     """)
     conn.commit()
-    print("public.nsgr_stg_accounts отгружена в public.nsgr_dwh_dim_accounts")
+    print("public.nsgr_stg_accounts отгружена в public.nsgr_dwh_dim_accounts_hist")
 
 
     cursor.execute(f"""
     DO $$
     BEGIN
     -- Проверяем, пустая ли таблица
-    IF NOT EXISTS (SELECT 1 FROM public.nsgr_dwh_dim_cards) THEN
+    IF NOT EXISTS (SELECT 1 FROM public.nsgr_dwh_dim_cards_hist) THEN
         -- Таблица пустая, вставляем все записи из stg
-        INSERT INTO public.nsgr_dwh_dim_cards (card_num, account_num, effective_from, effective_to, deleted_flg)
+        INSERT INTO public.nsgr_dwh_dim_cards_hist (card_num, account_num, effective_from, effective_to, deleted_flg)
         SELECT 
             card_num,
             account_num,
@@ -272,12 +272,12 @@ for date in unique_dates:
             FALSE as deleted_flg
         FROM public.nsgr_stg_cards AS s;
     ELSE
-        UPDATE public.nsgr_dwh_dim_cards
+        UPDATE public.nsgr_dwh_dim_cards_hist
         SET effective_to = to_date('{date}', 'DDMMYYYY'), deleted_flg = TRUE
         WHERE (card_num, account_num)
         IN (
             SELECT d.card_num, d.account_num
-            FROM public.nsgr_dwh_dim_cards d
+            FROM public.nsgr_dwh_dim_cards_hist d
             JOIN public.nsgr_stg_cards s
             ON d.card_num = s.card_num
             WHERE 
@@ -287,7 +287,7 @@ for date in unique_dates:
                 AND d.effective_to = '3000-01-01'::DATE
         );
                 
-        INSERT INTO public.nsgr_dwh_dim_cards (card_num, account_num, effective_from, effective_to, deleted_flg)
+        INSERT INTO public.nsgr_dwh_dim_cards_hist (card_num, account_num, effective_from, effective_to, deleted_flg)
         SELECT 
             s.card_num as card_num, 
             s.account_num as account_num, 
@@ -297,7 +297,7 @@ for date in unique_dates:
         FROM 
             public.nsgr_stg_cards s
         LEFT JOIN 
-            public.nsgr_dwh_dim_cards d ON s.card_num = d.card_num 
+            public.nsgr_dwh_dim_cards_hist d ON s.card_num = d.card_num 
                 AND d.effective_to = '3000-01-01'::DATE
         WHERE 
             d.account_num IS NULL OR 
@@ -311,16 +311,16 @@ for date in unique_dates:
 
     """)
     conn.commit()
-    print("public.nsgr_stg_cards отгружена в public.nsgr_dwh_dim_cards")
+    print("public.nsgr_stg_cards отгружена в public.nsgr_dwh_dim_cards_hist")
 
 
     cursor.execute(f"""
     DO $$
     BEGIN
     -- Проверяем, пустая ли таблица
-    IF NOT EXISTS (SELECT 1 FROM public.nsgr_dwh_dim_terminals) THEN
+    IF NOT EXISTS (SELECT 1 FROM public.nsgr_dwh_dim_terminals_hist) THEN
         -- Таблица пустая, вставляем все записи из stg
-        INSERT INTO public.nsgr_dwh_dim_terminals (terminal_id, terminal_type, terminal_city, terminal_address, effective_from, effective_to, deleted_flg)
+        INSERT INTO public.nsgr_dwh_dim_terminals_hist (terminal_id, terminal_type, terminal_city, terminal_address, effective_from, effective_to, deleted_flg)
         SELECT 
             terminal_id,
             terminal_type,
@@ -331,12 +331,12 @@ for date in unique_dates:
             FALSE as deleted_flg
         FROM public.nsgr_stg_terminals AS s;
     ELSE
-        UPDATE public.nsgr_dwh_dim_terminals
+        UPDATE public.nsgr_dwh_dim_terminals_hist
         SET effective_to = to_date('{date}', 'DDMMYYYY'), deleted_flg = TRUE
         WHERE (terminal_id, terminal_type, terminal_city, terminal_address)
         IN (
             SELECT d.terminal_id, d.terminal_type, d.terminal_city, d.terminal_address
-            FROM public.nsgr_dwh_dim_terminals d
+            FROM public.nsgr_dwh_dim_terminals_hist d
             JOIN public.nsgr_stg_terminals s
             ON d.terminal_id = s.terminal_id
             WHERE 
@@ -348,7 +348,7 @@ for date in unique_dates:
                 AND d.effective_to = '3000-01-01'::DATE
         );
                 
-        INSERT INTO public.nsgr_dwh_dim_terminals (terminal_id, terminal_type, terminal_city, terminal_address, effective_from, effective_to, deleted_flg)
+        INSERT INTO public.nsgr_dwh_dim_terminals_hist (terminal_id, terminal_type, terminal_city, terminal_address, effective_from, effective_to, deleted_flg)
         SELECT 
             s.terminal_id as terminal_id, 
             s.terminal_type as terminal_type, 
@@ -360,7 +360,7 @@ for date in unique_dates:
         FROM 
             public.nsgr_stg_terminals s
         LEFT JOIN 
-            public.nsgr_dwh_dim_terminals d ON s.terminal_id = d.terminal_id 
+            public.nsgr_dwh_dim_terminals_hist d ON s.terminal_id = d.terminal_id 
                 AND d.effective_to = '3000-01-01'::DATE
         WHERE 
             d.terminal_id IS NULL OR 
@@ -376,7 +376,7 @@ for date in unique_dates:
 
     """)
     conn.commit()
-    print("public.nsgr_stg_terminals отгружена в public.nsgr_dwh_dim_terminals")
+    print("public.nsgr_stg_terminals отгружена в public.nsgr_dwh_dim_terminals_hist")
 
 
     cursor.execute(f"""
@@ -420,10 +420,10 @@ for date in unique_dates:
         term.terminal_city as terminal_city,
         c.client_id as client_id
     FROM public.nsgr_dwh_fact_transactions as t
-    JOIN public.nsgr_dwh_dim_cards as car on car.card_num = t.card_num 
-    JOIN public.nsgr_dwh_dim_accounts as acc on acc.account_num = car.account_num  
-    JOIN public.nsgr_dwh_dim_clients as c on c.client_id = acc.client 
-    JOIN public.nsgr_dwh_dim_terminals as term ON t.terminal = term.terminal_id
+    JOIN public.nsgr_dwh_dim_cards_hist as car on car.card_num = t.card_num and car.deleted_flg = false
+    JOIN public.nsgr_dwh_dim_accounts_hist as acc on acc.account_num = car.account_num  and acc.deleted_flg = false
+    JOIN public.nsgr_dwh_dim_clients_hist as c on c.client_id = acc.client and c.deleted_flg = false
+    JOIN public.nsgr_dwh_dim_terminals_hist as term ON t.terminal = term.terminal_id and term.deleted_flg = false
     ),
     one_hour_diff_city_transactions AS (
         SELECT
@@ -438,9 +438,9 @@ for date in unique_dates:
     select 
         * 
     from public.nsgr_dwh_fact_transactions  as t
-    join public.nsgr_dwh_dim_cards  as c on c.card_num = t.card_num
-    join public.nsgr_dwh_dim_accounts as a on a.account_num  = c.account_num  
-    join public.nsgr_dwh_dim_clients as cl on cl.client_id  = a.client),
+    join public.nsgr_dwh_dim_cards_hist  as c on c.card_num = t.card_num and c.deleted_flg = false
+    join public.nsgr_dwh_dim_accounts_hist as a on a.account_num  = c.account_num and a.deleted_flg = false  
+    join public.nsgr_dwh_dim_clients_hist as cl on cl.client_id  = a.client and cl.deleted_flg = false),
     joined_req as (
     select 
         r1.client_id as client_id,
@@ -542,14 +542,13 @@ for date in unique_dates:
         end as event_type,
         to_date('{date}', 'DDMMYYYY') as report_dt
     from public.nsgr_dwh_fact_transactions as t
-    left join public.nsgr_dwh_dim_cards as car on car.card_num = t.card_num 
-    left join public.nsgr_dwh_dim_accounts as acc on acc.account_num = car.account_num  
-    left join public.nsgr_dwh_dim_clients as c on c.client_id = acc.client 
+    left join public.nsgr_dwh_dim_cards_hist as car on car.card_num = t.card_num and car.deleted_flg = false
+    left join public.nsgr_dwh_dim_accounts_hist as acc on acc.account_num = car.account_num   and acc.deleted_flg = false
+    left join public.nsgr_dwh_dim_clients_hist as c on c.client_id = acc.client  and c.deleted_flg = false
     left join public.nsgr_dwh_fact_passport_blacklist as b on c.passport_num = b.passport_num 
-    left join one_hour_diff_city_transactions as h on h.client_id = c.client_id and t.trans_id = h.trans_id
+    left join one_hour_diff_city_transactions as h on h.client_id = c.client_id and t.trans_id = h.trans_id  and h.deleted_flg = false
     LEFT JOIN reassembly_of_amounts AS r ON r.client_id = c.client_id and t.trans_id = r.trans_id
     where 
-        c.deleted_flg = false and 
         (
             b.passport_num is not null or 
             c.passport_valid_to < t.trans_date or 

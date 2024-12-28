@@ -48,8 +48,8 @@ CREATE TABLE public.nsgr_stg_transactions (
 );
 
 
-CREATE TABLE public.nsgr_dwh_dim_terminals (
-    terminal_id VARCHAR PRIMARY KEY,
+CREATE TABLE public.nsgr_dwh_dim_terminals_hist (
+    terminal_id VARCHAR,
     terminal_type VARCHAR,
     terminal_city VARCHAR,
     terminal_address VARCHAR,
@@ -65,7 +65,7 @@ CREATE TABLE public.nsgr_dwh_fact_passport_blacklist (
     PRIMARY KEY (passport_num, entry_dt)
 );
 
-CREATE TABLE public.nsgr_dwh_dim_clients (
+CREATE TABLE public.nsgr_dwh_dim_clients_hist (
     client_id VARCHAR PRIMARY KEY,
     last_name VARCHAR,
     first_name VARCHAR,
@@ -80,7 +80,7 @@ CREATE TABLE public.nsgr_dwh_dim_clients (
 
 );
 
-CREATE TABLE public.nsgr_dwh_dim_accounts (
+CREATE TABLE public.nsgr_dwh_dim_accounts_hist (
     account_num VARCHAR PRIMARY KEY,
     valid_to DATE,
     client VARCHAR,
@@ -90,7 +90,7 @@ CREATE TABLE public.nsgr_dwh_dim_accounts (
     FOREIGN KEY (client) REFERENCES public.nsgr_dwh_dim_clients(client_id)
 );
 
-CREATE TABLE public.nsgr_dwh_dim_cards (
+CREATE TABLE public.nsgr_dwh_dim_cards_hist (
     card_num VARCHAR PRIMARY KEY,
     account_num VARCHAR,
     effective_from DATE, 
