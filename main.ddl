@@ -56,7 +56,7 @@ CREATE TABLE public.nsgr_dwh_dim_terminals_hist (
     effective_from DATE, 
     effective_to DATE, 
     deleted_flg BOOL,
-    PRIMARY KEY (terminal_id, terminal_type, terminal_city, terminal_address)
+    PRIMARY KEY (terminal_id, effective_from, effective_to)
 );
 
 CREATE TABLE public.nsgr_dwh_fact_passport_blacklist (
@@ -66,7 +66,7 @@ CREATE TABLE public.nsgr_dwh_fact_passport_blacklist (
 );
 
 CREATE TABLE public.nsgr_dwh_dim_clients_hist (
-    client_id VARCHAR PRIMARY KEY,
+    client_id VARCHAR,
     last_name VARCHAR,
     first_name VARCHAR,
     patrinymic VARCHAR,
@@ -76,27 +76,30 @@ CREATE TABLE public.nsgr_dwh_dim_clients_hist (
     phone VARCHAR,
     effective_from DATE, 
     effective_to DATE, 
-    deleted_flg BOOL
+    deleted_flg BOOL,
+    PRIMARY KEY (client_id, effective_from, effective_to)
 
 );
 
 CREATE TABLE public.nsgr_dwh_dim_accounts_hist (
-    account_num VARCHAR PRIMARY KEY,
+    account_num VARCHAR,
     valid_to DATE,
     client VARCHAR,
     effective_from DATE, 
     effective_to DATE, 
     deleted_flg BOOL,
-    FOREIGN KEY (client) REFERENCES public.nsgr_dwh_dim_clients(client_id)
+    PRIMARY KEY (account_num, effective_from, effective_to)
+    --FOREIGN KEY (client) REFERENCES public.nsgr_dwh_dim_clients(client_id)
 );
 
 CREATE TABLE public.nsgr_dwh_dim_cards_hist (
-    card_num VARCHAR PRIMARY KEY,
+    card_num VARCHAR,
     account_num VARCHAR,
     effective_from DATE, 
     effective_to DATE, 
     deleted_flg BOOL,
-    FOREIGN KEY (account_num) REFERENCES public.nsgr_dwh_dim_accounts(account_num)
+    PRIMARY KEY (card_num, effective_from, effective_to)
+    --FOREIGN KEY (account_num) REFERENCES public.nsgr_dwh_dim_accounts(account_num)
 );
 
 CREATE TABLE public.nsgr_dwh_fact_transactions (
